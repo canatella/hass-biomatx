@@ -7,11 +7,14 @@ import biomatx
 from asyncio import gather
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.dispatcher import async_dispatcher_send
+from serial.urlhandler import protocol_socket
 
 from .const import _LOGGER, BIOMATX_SIGNAL_UPDATE
 
 BiomatxDevice = typing.Union[biomatx.Relay, biomatx.Switch]
 
+# HACK: don't sleep when closing the socket using async!!
+protocol_socket.time.sleep = lambda x: None  
 
 class BiomatxBus(biomatx.Bus):
     """BiomatX bus wrapper."""
