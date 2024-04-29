@@ -2,7 +2,11 @@
 import biomatx
 
 from asyncio import Lock
-from homeassistant.components.light import LightEntity
+from homeassistant.components.light import (
+    ColorMode,
+    LightEntity,
+    LightEntityDescription
+)
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
@@ -31,9 +35,13 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
 class BiomatxLight(BiomatxEntity, LightEntity):
     """BiomatX light device."""
 
+    entity_description: LightEntityDescription
+
     def __init__(self, device: biomatx.Relay):
         """Initialize a light device."""
         super().__init__(device)
+        self._attr_color_mode = ColorMode.ONOFF
+        self._attr_supported_color_modes = { ColorMode.ONOFF }
 
 
     @property
@@ -50,7 +58,7 @@ class BiomatxLight(BiomatxEntity, LightEntity):
                 return
 
             await self.biomatx_device.toggle()
-            
+
         self.async_write_ha_state()
 
     async def async_turn_off(self, **kwargs):
@@ -63,7 +71,7 @@ class BiomatxLight(BiomatxEntity, LightEntity):
                 return
 
             await self.biomatx_device.toggle()
-            
+
         self.async_write_ha_state()
 
     def reset(self):
